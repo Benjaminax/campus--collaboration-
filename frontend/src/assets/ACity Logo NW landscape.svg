@@ -1,0 +1,19 @@
+<!-- Academic City Logo Placeholder -->
+<svg width="200" height="60" viewBox="0 0 200 60" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="200" height="60" fill="#CC3634" rx="8"/>
+  
+  <!-- Academic City Text -->
+  <text x="100" y="25" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="white" text-anchor="middle">
+    Academic City
+  </text>
+  
+  <!-- University -->
+  <text x="100" y="45" font-family="Arial, sans-serif" font-size="10" fill="#B2B2B2" text-anchor="middle">
+    University College
+  </text>
+  
+  <!-- Icon -->
+  <circle cx="30" cy="30" r="15" fill="white" opacity="0.2"/>
+  <path d="M25 35 L30 25 L35 35 Z" fill="white"/>
+</svg>
