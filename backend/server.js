@@ -30,7 +30,9 @@ const io = new Server(server, {
     origin: [
       process.env.FRONTEND_URL || "http://localhost:3000",
       "http://localhost:5173",
-      "http://localhost:3001"
+      "http://localhost:3001",
+      "https://benjaminax.github.io",
+      "https://benjaminax.github.io/campus--collaboration-"
     ],
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     credentials: true
@@ -63,7 +65,9 @@ app.use(cors({
       "http://localhost:5173",
       "http://localhost:3001",
       "http://127.0.0.1:5173",
-      "http://127.0.0.1:3000"
+      "http://127.0.0.1:3000",
+      "https://benjaminax.github.io",
+      "https://benjaminax.github.io/campus--collaboration-"
     ];
     
     if (allowedOrigins.indexOf(origin) !== -1 || process.env.NODE_ENV === 'development') {
