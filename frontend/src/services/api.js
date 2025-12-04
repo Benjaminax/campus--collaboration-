@@ -1,41 +1,47 @@
-import axios from 'axios'
+import axios from 'axios';
+import { config } from '../config';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
-
-export const api = axios.create({
-  baseURL: API_BASE_URL,
+const api = axios.create({
+  baseURL: config.api.baseURL,
+  timeout: config.api.timeout,
   headers: {
     'Content-Type': 'application/json',
   },
-})
+  withCredentials: true,
+});
 
-// Request interceptor to add auth token
+// Add auth token to requests
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token')
+    const token = localStorage.getItem('token') || 
+                  sessionStorage.getItem('token') ||
+                  document.cookie.replace(/(?:(?:^|.*;\s*)token\s*=\s*([^;]*).*$)|^.*$/, "$1");
+    
     if (token) {
-      config.headers.Authorization = `Bearer ${token}`
+      config.headers.Authorization = `Bearer ${token}`;
     }
-    return config
+    return config;
   },
-  (error) => {
-    return Promise.reject(error)
-  }
-)
+  (error) => Promise.reject(error)
+);
 
-// Response interceptor to handle errors
+// Handle responses
 api.interceptors.response.use(
   (response) => response,
   (error) => {
+    console.error('API Error:', error.response?.data || error.message);
+    
+    // Handle specific errors
     if (error.response?.status === 401) {
-      localStorage.removeItem('token')
-      delete api.defaults.headers.common['Authorization']
-      // Let the auth context handle navigation
-      console.log('401 error - token removed')
+      // Clear auth and redirect
+      localStorage.removeItem('token');
+      sessionStorage.removeItem('token');
+      window.location.href = '/login';
     }
-    return Promise.reject(error)
+    
+    return Promise.reject(error);
   }
-)
+);
 
 // API endpoints
 export const authAPI = {
@@ -45,7 +51,7 @@ export const authAPI = {
   getMe: () => api.get('/auth/me'),
   forgotPassword: (email) => api.post('/auth/forgot-password', { email }),
   resetPassword: (token, password) => api.post('/auth/reset-password', { token, password }),
-}
+};
 
 export const userAPI = {
   getUsers: (params) => api.get('/users', { params }),
@@ -55,7 +61,7 @@ export const userAPI = {
     headers: { 'Content-Type': 'multipart/form-data' }
   }),
   deleteUser: (id) => api.delete(`/users/${id}`),
-}
+};
 
 export const projectAPI = {
   getProjects: (params) => api.get('/projects', { params }),
@@ -66,7 +72,7 @@ export const projectAPI = {
   addMember: (id, userId) => api.post(`/projects/${id}/members`, { userId }),
   removeMember: (id, userId) => api.delete(`/projects/${id}/members/${userId}`),
   updateMemberRole: (id, userId, role) => api.put(`/projects/${id}/members/${userId}`, { role }),
-}
+};
 
 export const taskAPI = {
   getTasks: (projectId, params) => api.get(`/projects/${projectId}/tasks`, { params }),
@@ -76,26 +82,26 @@ export const taskAPI = {
   deleteTask: (projectId, taskId) => api.delete(`/projects/${projectId}/tasks/${taskId}`),
   assignTask: (projectId, taskId, userId) => api.post(`/projects/${projectId}/tasks/${taskId}/assign`, { userId }),
   updateTaskStatus: (projectId, taskId, status) => api.put(`/projects/${projectId}/tasks/${taskId}/status`, { status }),
-}
+};
 
 export const commentAPI = {
   getComments: (projectId, taskId) => api.get(`/projects/${projectId}/tasks/${taskId}/comments`),
   createComment: (projectId, taskId, data) => api.post(`/projects/${projectId}/tasks/${taskId}/comments`, data),
   updateComment: (projectId, taskId, commentId, data) => api.put(`/projects/${projectId}/tasks/${taskId}/comments/${commentId}`, data),
   deleteComment: (projectId, taskId, commentId) => api.delete(`/projects/${projectId}/tasks/${taskId}/comments/${commentId}`),
-}
+};
 
 export const notificationAPI = {
   getNotifications: (params) => api.get('/notifications', { params }),
   markAsRead: (id) => api.put(`/notifications/${id}/read`),
   markAllAsRead: () => api.put('/notifications/read-all'),
   deleteNotification: (id) => api.delete(`/notifications/${id}`),
-}
+};
 
 export const activityAPI = {
   getActivities: (projectId, params) => api.get(`/projects/${projectId}/activities`, { params }),
   createActivity: (projectId, data) => api.post(`/projects/${projectId}/activities`, data),
-}
+};
 
 export const analyticsAPI = {
   getDashboardAnalytics: (timeframe = 30) => api.get(`/analytics?timeframe=${timeframe}`),
@@ -103,7 +109,6 @@ export const analyticsAPI = {
   getActivityStats: (projectId, timeframe = 7) => api.get(`/activities/project/${projectId}/stats?timeframe=${timeframe}`),
   getTeamAnalytics: (timeframe = 30) => api.get(`/analytics/team?timeframe=${timeframe}`),
   getProductivityInsights: (timeframe = 30) => api.get(`/analytics/productivity?timeframe=${timeframe}`),
-}
+};
 
-// Default export for convenience
-export default api
+export default api;
