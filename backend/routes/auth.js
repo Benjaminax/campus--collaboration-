@@ -64,11 +64,15 @@ router.post('/register', validateUserRegistration, handleValidationErrors, async
 router.post('/login', validateUserLogin, handleValidationErrors, async (req, res) => {
   try {
     const { email, password } = req.body;
+    
+    console.log('Login attempt:', { email, password: password ? '[PRESENT]' : '[MISSING]' });
 
     // Check if user exists
     const user = await User.findOne({ email }).select('+password');
+    console.log('User found:', user ? { id: user._id, email: user.email, isActive: user.isActive } : 'NO USER FOUND');
     
     if (!user) {
+      console.log('Login failed: User not found');
       return res.status(401).json({
         success: false,
         message: 'Invalid credentials'
@@ -77,6 +81,7 @@ router.post('/login', validateUserLogin, handleValidationErrors, async (req, res
 
     // Check if user is active
     if (!user.isActive) {
+      console.log('Login failed: User not active');
       return res.status(401).json({
         success: false,
         message: 'Account has been deactivated'
@@ -84,9 +89,12 @@ router.post('/login', validateUserLogin, handleValidationErrors, async (req, res
     }
 
     // Validate password
+    console.log('Attempting password validation...');
     const isMatch = await user.matchPassword(password);
+    console.log('Password match result:', isMatch);
     
     if (!isMatch) {
+      console.log('Login failed: Password mismatch');
       return res.status(401).json({
         success: false,
         message: 'Invalid credentials'
@@ -98,12 +106,14 @@ router.post('/login', validateUserLogin, handleValidationErrors, async (req, res
     await user.save();
 
     // Generate token
+    console.log('Generating token with JWT_SECRET:', process.env.JWT_SECRET ? 'PRESENT' : 'MISSING');
     const token = generateToken(user._id);
     console.log('Generated token for user:', user.email, 'Token:', token ? token.substring(0, 20) + '...' : 'No token');
 
     // Remove password from response
     user.password = undefined;
 
+    console.log('Login successful for user:', user.email);
     res.json({
       success: true,
       message: 'Login successful',
@@ -114,9 +124,11 @@ router.post('/login', validateUserLogin, handleValidationErrors, async (req, res
     });
   } catch (error) {
     console.error('Login error:', error);
+    console.error('Error stack:', error.stack);
     res.status(500).json({
       success: false,
-      message: 'Server error during login'
+      message: 'Server error during login',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
     });
   }
 });

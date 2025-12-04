@@ -97,6 +97,31 @@ app.get('/health', (req, res) => {
   });
 });
 
+// Debug endpoint for checking environment
+app.get('/api/debug', async (req, res) => {
+  try {
+    const User = require('./models/User');
+    const userCount = await User.countDocuments();
+    
+    res.json({
+      success: true,
+      debug: {
+        userCount,
+        hasJwtSecret: !!process.env.JWT_SECRET,
+        jwtSecretLength: process.env.JWT_SECRET ? process.env.JWT_SECRET.length : 0,
+        mongoUri: process.env.MONGODB_URI ? 'SET' : 'NOT SET',
+        nodeEnv: process.env.NODE_ENV || 'development',
+        database: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected'
+      }
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
 if (process.env.NODE_ENV === 'production') {
   if (!process.env.JWT_SECRET || process.env.JWT_SECRET.length < 32) {
     console.error('⚠️  WARNING: JWT_SECRET should be at least 32 characters in production');
