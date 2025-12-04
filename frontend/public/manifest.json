@@ -1,0 +1,31 @@
+{
+  "name": "Campus Collaboration Board",
+  "short_name": "Campus Board",
+  "description": "A collaborative platform for campus project management",
+  "start_url": "/campus--collaboration-/",
+  "scope": "/campus--collaboration-/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#3B82F6",
+  "orientation": "portrait-primary",
+  "categories": ["education", "productivity", "collaboration"],
+  "lang": "en",
+  "dir": "ltr",
+  "icons": [
+    {
+      "src": "/campus--collaboration-/ACity Logo NW landscape.png",
+      "sizes": "any",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/campus--collaboration-/ACity Logo NW landscape.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Campus Collaboration Dashboard"
+    }
+  ]
+}

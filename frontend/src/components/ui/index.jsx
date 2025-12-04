@@ -21,10 +21,10 @@ export const Button = ({
   }
   
   const sizes = {
-    sm: 'px-3 py-1.5 text-sm',
-    md: 'px-4 py-2 text-sm',
-    lg: 'px-6 py-3 text-base',
-    xl: 'px-8 py-4 text-lg',
+    sm: 'px-3 py-2 text-sm min-h-[40px] md:min-h-[32px]',
+    md: 'px-4 py-2.5 text-sm min-h-[44px] md:min-h-[36px]',
+    lg: 'px-6 py-3 text-base min-h-[48px] md:min-h-[40px]',
+    xl: 'px-8 py-4 text-lg min-h-[52px] md:min-h-[48px]',
   }
 
   return (
@@ -62,7 +62,7 @@ export const Input = ({
         </label>
       )}
       <input
-        className={`w-full px-3 py-2 border border-gray-300 rounded-lg focus-ring focus:border-primary-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 ${
+        className={`w-full px-3 py-3 md:py-2 text-base md:text-sm border border-gray-300 rounded-lg focus-ring focus:border-primary-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 min-h-[44px] ${
           error ? 'border-red-500 focus:border-red-500' : ''
         } ${className}`}
         {...props}

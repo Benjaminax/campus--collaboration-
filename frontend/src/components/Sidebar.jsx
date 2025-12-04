@@ -86,7 +86,7 @@ const Sidebar = ({ isMobileOpen, setIsMobileOpen, className = '', onCollapseChan
             className="flex items-center space-x-3"
           >
             <motion.img 
-              src="/ACity Logo NW landscape.png"
+              src={`${import.meta.env.BASE_URL}ACity Logo NW landscape.png`}
               alt="Academic City Logo"
               className="h-14 w-auto object-contain"
               whileHover={{ 

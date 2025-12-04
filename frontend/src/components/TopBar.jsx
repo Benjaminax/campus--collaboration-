@@ -19,7 +19,7 @@ const TopBar = () => {
         whileHover={{ scale: 1.02 }}
       >
         <motion.img
-          src="/src/assets/ACity Logo NW landscape.svg"
+          src={`${import.meta.env.BASE_URL}ACity Logo NW landscape.png`}
           alt="Academic City Logo"
           className="h-8 object-contain"
           whileHover={{ 

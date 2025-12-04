@@ -98,7 +98,7 @@ const Header = ({ isMobileMenuOpen, setIsMobileMenuOpen }) => {
             transition={{ type: "spring", stiffness: 400 }}
           >
             <motion.img 
-              src="/ACity Logo NW landscape.png"
+              src={`${import.meta.env.BASE_URL}ACity Logo NW landscape.png`}
               alt="Academic City Logo"
               className="h-10 md:h-16 w-auto object-contain cursor-pointer"
               whileHover={{ 
@@ -150,7 +150,7 @@ const Header = ({ isMobileMenuOpen, setIsMobileMenuOpen }) => {
               className="relative p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 rounded-xl hover:bg-gray-100/80 dark:hover:bg-gray-700/80 transition-colors group"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              onClick={() => window.location.href = '/notifications'}
+              onClick={() => navigate('/notifications')}
             >
               <motion.div whileHover={{ rotate: 10 }}>
                 <BellIcon className="h-5 w-5" />
