@@ -7,11 +7,24 @@ const router = express.Router();
 // @desc    Register a new user
 // @route   POST /api/auth/register
 // @access  Public
-router.post('/register', validateUserRegistration, handleValidationErrors, async (req, res) => {
+router.post('/register', async (req, res) => {
   try {
+    console.log('=== REGISTRATION ATTEMPT START ===');
     const { name, email, password, department, studentId, role = 'student' } = req.body;
+    
+    console.log('Registration attempt:', { name, email, department, studentId, role, password: password ? '[PRESENT]' : '[MISSING]' });
+
+    // Basic validation
+    if (!name || !email || !password || !department) {
+      console.log('Registration failed: Missing required fields');
+      return res.status(400).json({
+        success: false,
+        message: 'Name, email, password, and department are required'
+      });
+    }
 
     // Check if user already exists
+    console.log('Checking for existing user...');
     const existingUser = await User.findOne({ 
       $or: [
         { email },
@@ -20,6 +33,7 @@ router.post('/register', validateUserRegistration, handleValidationErrors, async
     });
 
     if (existingUser) {
+      console.log('Registration failed: User already exists');
       return res.status(400).json({
         success: false,
         message: 'User with this email or student ID already exists'
@@ -27,6 +41,7 @@ router.post('/register', validateUserRegistration, handleValidationErrors, async
     }
 
     // Create user
+    console.log('Creating new user...');
     const user = new User({
       name,
       email,
@@ -37,10 +52,13 @@ router.post('/register', validateUserRegistration, handleValidationErrors, async
     });
 
     await user.save();
+    console.log('User created successfully:', user.email);
 
     // Generate token
     const token = generateToken(user._id);
+    console.log('Generated token for new user:', user.email);
 
+    console.log('=== REGISTRATION ATTEMPT SUCCESS ===');
     res.status(201).json({
       success: true,
       message: 'User registered successfully',
@@ -50,10 +68,13 @@ router.post('/register', validateUserRegistration, handleValidationErrors, async
       }
     });
   } catch (error) {
+    console.error('=== REGISTRATION ATTEMPT FAILED ===');
     console.error('Registration error:', error);
+    console.error('Error stack:', error.stack);
     res.status(500).json({
       success: false,
-      message: 'Server error during registration'
+      message: 'Server error during registration',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
     });
   }
 });
@@ -61,13 +82,24 @@ router.post('/register', validateUserRegistration, handleValidationErrors, async
 // @desc    Login user
 // @route   POST /api/auth/login
 // @access  Public
-router.post('/login', validateUserLogin, handleValidationErrors, async (req, res) => {
+router.post('/login', async (req, res) => {
   try {
+    console.log('=== LOGIN ATTEMPT START ===');
     const { email, password } = req.body;
     
     console.log('Login attempt:', { email, password: password ? '[PRESENT]' : '[MISSING]' });
 
+    // Basic validation
+    if (!email || !password) {
+      console.log('Login failed: Missing email or password');
+      return res.status(400).json({
+        success: false,
+        message: 'Email and password are required'
+      });
+    }
+
     // Check if user exists
+    console.log('Looking for user with email:', email);
     const user = await User.findOne({ email }).select('+password');
     console.log('User found:', user ? { id: user._id, email: user.email, isActive: user.isActive } : 'NO USER FOUND');
     
@@ -102,6 +134,7 @@ router.post('/login', validateUserLogin, handleValidationErrors, async (req, res
     }
 
     // Update last login
+    console.log('Updating last login...');
     user.lastLogin = new Date();
     await user.save();
 
@@ -114,6 +147,7 @@ router.post('/login', validateUserLogin, handleValidationErrors, async (req, res
     user.password = undefined;
 
     console.log('Login successful for user:', user.email);
+    console.log('=== LOGIN ATTEMPT SUCCESS ===');
     res.json({
       success: true,
       message: 'Login successful',
@@ -123,6 +157,7 @@ router.post('/login', validateUserLogin, handleValidationErrors, async (req, res
       }
     });
   } catch (error) {
+    console.error('=== LOGIN ATTEMPT FAILED ===');
     console.error('Login error:', error);
     console.error('Error stack:', error.stack);
     res.status(500).json({
