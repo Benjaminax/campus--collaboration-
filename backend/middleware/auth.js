@@ -61,6 +61,15 @@ const authorize = (...roles) => {
   };
 };
 const generateToken = (id) => {
+  console.log('generateToken called with id:', id);
+  console.log('JWT_SECRET exists:', !!process.env.JWT_SECRET);
+  console.log('JWT_SECRET length:', process.env.JWT_SECRET ? process.env.JWT_SECRET.length : 0);
+  console.log('JWT_SECRET value (first 10 chars):', process.env.JWT_SECRET ? process.env.JWT_SECRET.substring(0, 10) + '...' : 'UNDEFINED');
+  
+  if (!process.env.JWT_SECRET) {
+    throw new Error('JWT_SECRET environment variable is not set');
+  }
+  
   return jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: '30d'
   });
