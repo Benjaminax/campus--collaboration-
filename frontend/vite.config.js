@@ -5,17 +5,27 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   base: '/campus--collaboration-/',
+  build: {
+    outDir: 'dist',
+    assetsDir: 'assets',
+    sourcemap: false,
+    rollupOptions: {
+      output: {
+        manualChunks: undefined,
+      }
+    }
+  },
   server: {
     proxy: {
       '/api': {
         target: 'https://campus-collaboration.onrender.com',
         changeOrigin: true,
-        secure: false,
+        secure: true,
       },
       '/socket.io': {
         target: 'https://campus-collaboration.onrender.com',
         changeOrigin: true,
-        secure: false,
+        secure: true,
         ws: true,
       }
     }

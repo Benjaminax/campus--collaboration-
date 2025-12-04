@@ -1,9 +1,9 @@
 // src/config.js
 export const config = {
-  // Production URLs
+  // API Configuration - uses production URLs for GitHub Pages deployment
   api: {
     baseURL: import.meta.env.VITE_API_URL || 'https://campus-collaboration.onrender.com/api',
-    timeout: 10000,
+    timeout: 30000, // Increased to 30 seconds for Render cold starts
   },
   socket: {
     url: import.meta.env.VITE_SOCKET_URL || 'https://campus-collaboration.onrender.com',
@@ -14,7 +14,9 @@ export const config = {
       reconnectionAttempts: 5,
       reconnectionDelay: 1000,
     }
-  }
+  },
+  // GitHub Pages configuration
+  isProduction: import.meta.env.PROD || window.location.hostname.includes('github.io')
 };
 
 // Helper functions

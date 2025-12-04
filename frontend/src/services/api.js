@@ -29,7 +29,14 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    console.error('API Error:', error.response?.data || error.message);
+    // Enhanced error logging for debugging
+    if (error.code === 'ECONNABORTED') {
+      console.error('⏰ Request timeout - Server may be cold starting (this is normal for Render free tier)');
+    } else if (error.message?.includes('Network Error')) {
+      console.error('🌐 Network Error - Check your internet connection or server status');
+    } else {
+      console.error('API Error:', error.response?.data || error.message);
+    }
     
     // Handle specific errors
     if (error.response?.status === 401) {
