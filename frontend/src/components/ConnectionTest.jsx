@@ -8,13 +8,20 @@ export default function ConnectionTest() {
   const [socketStatus, setSocketStatus] = useState('Disconnected');
 
   useEffect(() => {
-    // Test backend API
-    api.get('/health')
+    // Test backend API with debug endpoint since health might not work
+    api.get('/debug')
       .then(response => {
-        setBackendStatus(`✅ Connected: ${response.data.message}`);
+        setBackendStatus(`✅ Connected: ${response.data.success ? 'API Working' : 'Debug endpoint reached'}`);
       })
       .catch(error => {
-        setBackendStatus(`❌ Error: ${error.message}`);
+        // Try health endpoint as fallback
+        api.get('/health')
+          .then(response => {
+            setBackendStatus(`✅ Connected: ${response.data.message || 'Server OK'}`);
+          })
+          .catch(error2 => {
+            setBackendStatus(`❌ Error: ${error.response?.status ? `Status ${error.response.status}` : error.message}`);
+          });
       });
 
     // Test Socket.IO

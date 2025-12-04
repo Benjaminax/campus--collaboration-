@@ -16,7 +16,6 @@ import {
 import { Card } from '../components/ui'
 import { useAuth } from '../contexts/AuthContext'
 import api from '../services/api'
-import ConnectionTest from '../components/ConnectionTest'
 
 function Dashboard() {
   const { user } = useAuth()
@@ -169,9 +168,6 @@ function Dashboard() {
           </motion.p>
         </div>
       </motion.div>
-
-      {/* Connection Test - Temporary for testing */}
-      <ConnectionTest />
 
       {/* Stats Grid */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
