@@ -13,6 +13,8 @@ permissions:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    environment:
+      name: github-pages  # ← This expanded format is required
     steps:
       - name: Checkout
         uses: actions/checkout@v4
