@@ -9,26 +9,37 @@ const Layout = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
 
+  // Close mobile menu when resizing to desktop
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 768) { // md breakpoint
+        setIsMobileMenuOpen(false)
+      }
+    }
+
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
+
   if (!isAuthenticated) {
     return <Outlet />
   }
 
   return (
     <div className="min-h-screen bg-gray-50/50 dark:bg-secondary-900/50">
-      {/* Desktop Sidebar - Fixed positioned */}
-      <div className="hidden md:block">
-        <Sidebar />
-      </div>
-      
-      {/* Mobile Sidebar */}
+      {/* Unified Sidebar - Responsive for both mobile and desktop */}
       <Sidebar 
         isMobileOpen={isMobileMenuOpen}
         setIsMobileOpen={setIsMobileMenuOpen}
-        className="md:hidden"
+        onCollapseChange={setSidebarCollapsed}
       />
       
-      {/* Main Content - Offset by sidebar width on desktop */}
-      <div className="flex flex-col min-h-screen md:ml-64">
+      {/* Main Content - Dynamic offset based on sidebar state */}
+      <div className={`flex flex-col min-h-screen transition-all duration-300 ${
+        // On desktop: offset by sidebar width (collapsed or full)
+        // On mobile: no offset (sidebar is overlay)
+        'md:ml-64 lg:ml-64'
+      }`}>
         <Header 
           isMobileMenuOpen={isMobileMenuOpen}
           setIsMobileMenuOpen={setIsMobileMenuOpen}

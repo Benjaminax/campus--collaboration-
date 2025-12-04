@@ -65,13 +65,13 @@ const Sidebar = ({ isMobileOpen, setIsMobileOpen, className = '', onCollapseChan
         transition={{ duration: 0.5, ease: "easeOut" }}
         className={`bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border-r border-gray-200/50 dark:border-gray-700/50 flex flex-col transition-all duration-300 ${
           isCollapsed ? 'w-20' : 'w-64'
-        } ${className} ${
-          // Desktop styles - full height, fixed position
-          'md:fixed md:left-0 md:top-0 md:bottom-0 md:h-screen md:z-30 ' +
-          // Mobile styles
+        } ${
+          // Desktop styles - always visible, fixed position
+          'hidden md:fixed md:flex md:left-0 md:top-0 md:bottom-0 md:h-screen md:z-30 ' +
+          // Mobile styles - only visible when menu is open, overlay style
           'max-md:fixed max-md:inset-y-0 max-md:left-0 max-md:z-50 max-md:h-full ' +
-          (isMobileOpen ? 'max-md:translate-x-0' : 'max-md:-translate-x-full')
-        }`}
+          (isMobileOpen ? 'max-md:flex max-md:translate-x-0' : 'max-md:hidden max-md:-translate-x-full')
+        } ${className}`}
       >
       {/* Background decoration */}
       <div className="absolute inset-0 bg-gradient-to-b from-primary-500/5 to-secondary-500/5 pointer-events-none"></div>
@@ -116,9 +116,9 @@ const Sidebar = ({ isMobileOpen, setIsMobileOpen, className = '', onCollapseChan
         </motion.button>
       </div>
 
-      {/* Mobile Search - Only visible on mobile and when not collapsed */}
-      {className.includes('md:hidden') && !isCollapsed && (
-        <div className="px-4 pb-4 border-b border-gray-200/50 dark:border-gray-700/50">
+      {/* Mobile Search - Only visible on mobile when menu is open */}
+      {isMobileOpen && (
+        <div className="px-4 pb-4 border-b border-gray-200/50 dark:border-gray-700/50 md:hidden">
           <div className="relative">
             <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
             <input
