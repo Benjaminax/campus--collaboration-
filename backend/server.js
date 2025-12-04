@@ -95,52 +95,30 @@ app.get('/', (req, res) => {
         <style>
           body { 
             font-family: Arial, sans-serif; 
-            max-width: 800px; 
-            margin: 50px auto; 
-            padding: 20px; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
             background-color: #f5f5f5;
           }
-          .container { 
-            background: white; 
-            padding: 30px; 
-            border-radius: 10px; 
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+          .message { 
+            font-size: 48px;
+            font-weight: bold;
+            color: #28a745;
             text-align: center;
           }
-          .success { color: #28a745; font-size: 24px; font-weight: bold; }
-          .info { color: #6c757d; margin: 10px 0; }
-          .endpoint { 
-            background: #f8f9fa; 
-            padding: 10px; 
-            border-radius: 5px; 
-            margin: 10px 0;
-            font-family: monospace;
+          .status {
+            font-size: 18px;
+            color: #6c757d;
+            margin-top: 10px;
           }
         </style>
       </head>
       <body>
-        <div class="container">
-          <h1>🎓 Campus Collaboration API</h1>
-          <div class="success">✅ Backend Working Successfully!</div>
-          <div class="info">Server is running and ready to handle requests</div>
-          <div class="info">Environment: ${process.env.NODE_ENV || 'development'}</div>
-          <div class="info">Database: ${mongoose.connection.readyState === 1 ? 'Connected' : 'Disconnected'}</div>
-          <div class="info">Uptime: ${Math.floor(process.uptime())} seconds</div>
-          
-          <h3>Available Endpoints:</h3>
-          <div class="endpoint">GET /health - Health check</div>
-          <div class="endpoint">GET /api/debug - Debug information</div>
-          <div class="endpoint">POST /api/auth/register - User registration</div>
-          <div class="endpoint">POST /api/auth/login - User login</div>
-          <div class="endpoint">GET /api/projects - List projects</div>
-          <div class="endpoint">GET /api/tasks - List tasks</div>
-          
-          <div style="margin-top: 20px;">
-            <a href="https://benjaminax.github.io/campus--collaboration-/" 
-               style="color: #007bff; text-decoration: none;">
-              🌐 Visit Frontend Application
-            </a>
-          </div>
+        <div>
+          <div class="message">Backend Working</div>
+          <div class="status">Connected to Frontend</div>
         </div>
       </body>
     </html>
@@ -161,21 +139,9 @@ app.get('/health', (req, res) => {
 // API Status endpoint - JSON response
 app.get('/api/status', (req, res) => {
   res.status(200).json({
-    success: true,
-    message: "Backend working successfully!",
-    status: "online",
-    timestamp: new Date().toISOString(),
-    uptime: process.uptime(),
-    environment: process.env.NODE_ENV || 'development',
-    database: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected',
-    version: "1.0.0",
-    endpoints: {
-      auth: "/api/auth",
-      users: "/api/users", 
-      projects: "/api/projects",
-      tasks: "/api/tasks",
-      notifications: "/api/notifications"
-    }
+    message: "Backend Working",
+    status: "Connected to Frontend",
+    timestamp: new Date().toISOString()
   });
 });
 
