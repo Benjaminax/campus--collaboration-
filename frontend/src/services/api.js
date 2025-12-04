@@ -29,13 +29,19 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    // Enhanced error logging for debugging
-    if (error.code === 'ECONNABORTED') {
-      console.error('⏰ Request timeout - Server may be cold starting (this is normal for Render free tier)');
-    } else if (error.message?.includes('Network Error')) {
-      console.error('🌐 Network Error - Check your internet connection or server status');
+    // Only log errors if we're online to reduce spam
+    if (navigator.onLine) {
+      // Enhanced error logging for debugging
+      if (error.code === 'ECONNABORTED') {
+        console.error('⏰ Request timeout - Server may be cold starting (this is normal for Render free tier)');
+      } else if (error.message?.includes('Network Error') || error.code === 'ERR_NETWORK') {
+        console.error('🌐 Network Error - Check your internet connection or server status');
+      } else {
+        console.error('API Error:', error.response?.data || error.message);
+      }
     } else {
-      console.error('API Error:', error.response?.data || error.message);
+      // Silently handle network errors when offline
+      console.log('📡 Request failed - Device is offline');
     }
     
     // Handle specific errors

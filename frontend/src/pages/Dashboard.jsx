@@ -158,14 +158,24 @@ function Dashboard() {
           >
             {getGreeting()}, {user?.name}! 👋
           </motion.h1>
-          <motion.p 
-            className="text-primary-100 text-sm md:text-base"
+          <motion.div
+            className="space-y-1"
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.4, duration: 0.5 }}
+            transition={{ delay: 0.3, duration: 0.5 }}
           >
-            Here's what's happening with your projects today.
-          </motion.p>
+            <p className="text-primary-100 text-sm md:text-base">
+              Here's what's happening with your projects today.
+            </p>
+            <p className="text-primary-200 text-xs md:text-sm font-medium">
+              {new Date().toLocaleDateString('en-US', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+              })}
+            </p>
+          </motion.div>
         </div>
       </motion.div>
 

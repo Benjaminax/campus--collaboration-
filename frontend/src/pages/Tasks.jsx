@@ -547,7 +547,7 @@ const Tasks = () => {
       </div>
 
       {/* Filters and Search */}
-      <div className="flex flex-col sm:flex-row gap-4">
+      <div className="flex flex-col gap-4">
         <div className="flex-1 relative">
           <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 dark:text-gray-500" />
           <input
@@ -555,15 +555,18 @@ const Tasks = () => {
             placeholder="Search tasks..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus-ring focus:border-primary-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white"
+            className="w-full pl-10 pr-4 py-3 text-base border border-gray-300 rounded-lg focus-ring focus:border-primary-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white touch-manipulation"
           />
         </div>
-        <div className="flex items-center space-x-2">
-          <FunnelIcon className="h-5 w-5 text-gray-500 dark:text-gray-400" />
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+          <div className="flex items-center space-x-2 flex-shrink-0">
+            <FunnelIcon className="h-5 w-5 text-gray-500 dark:text-gray-400" />
+            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Filters:</span>
+          </div>
           <select
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value)}
-            className="border border-gray-300 rounded-lg px-3 py-2 focus-ring focus:border-primary-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white"
+            className="flex-1 border border-gray-300 rounded-lg px-4 py-3 text-base focus-ring focus:border-primary-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white touch-manipulation"
           >
             <option value="all">All Status</option>
             <option value="todo">To Do</option>
@@ -574,7 +577,7 @@ const Tasks = () => {
           <select
             value={filterPriority}
             onChange={(e) => setFilterPriority(e.target.value)}
-            className="border border-gray-300 rounded-lg px-3 py-2 focus-ring focus:border-primary-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white"
+            className="flex-1 border border-gray-300 rounded-lg px-4 py-3 text-base focus-ring focus:border-primary-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white touch-manipulation"
           >
             <option value="all">All Priorities</option>
             <option value="high">High</option>
@@ -595,76 +598,74 @@ const Tasks = () => {
             whileHover={{ scale: 1.01 }}
             className="group"
           >
-            <Card className={`p-6 hover:shadow-lg transition-all duration-300 border-l-4 ${getStatusColor(task.status)}`}>
-              <div className="flex items-start justify-between">
-                <div className="flex-1 space-y-3">
+            <Card className={`p-4 sm:p-6 hover:shadow-lg transition-all duration-300 border-l-4 ${getStatusColor(task.status)}`}>
+              <div className="space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
                   {/* Task Header */}
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
-                        {task.title}
-                      </h3>
-                      <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                        {task.project?.name || task.projectName || 'Unknown Project'}
-                      </p>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      {getStatusBadge(task.status)}
-                      <div className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium border ${getPriorityColor(task.priority || 'medium')}`}>
-                        {(task.priority || 'medium').charAt(0).toUpperCase() + (task.priority || 'medium').slice(1)}
-                      </div>
-                    </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors line-clamp-2">
+                      {task.title}
+                    </h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-1 truncate">
+                      {task.project?.name || task.projectName || 'Unknown Project'}
+                    </p>
                   </div>
-
-                  {/* Task Description */}
-                  <p className="text-gray-700 dark:text-gray-300 text-sm">
-                    {task.description}
-                  </p>
-
-                  {/* Task Progress (for in-progress tasks) */}
-                  {task.status === 'in-progress' && task.progress && (
-                    <div className="space-y-1">
-                      <div className="flex justify-between text-sm">
-                        <span className="text-gray-600 dark:text-gray-400">Progress</span>
-                        <span className="text-gray-600 dark:text-gray-400">{task.progress}%</span>
-                      </div>
-                      <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-                        <div 
-                          className="h-full bg-gradient-to-r from-primary-500 to-secondary-500 rounded-full transition-all duration-300"
-                          style={{ width: `${task.progress}%` }}
-                        />
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Task Meta Information */}
-                  <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
-                    <div className="flex items-center space-x-1">
-                      <UserGroupIcon className="h-4 w-4" />
-                      <span>Assigned to: {task.assignedTo.name}</span>
-                    </div>
-                    <div className="flex items-center space-x-1">
-                      <CalendarDaysIcon className="h-4 w-4" />
-                      <span className={isOverdue(task.dueDate, task.status) ? 'text-red-600 font-medium' : ''}>
-                        Due: {formatDate(task.dueDate)}
-                      </span>
-                    </div>
-                    <div className="flex items-center space-x-1">
-                      <ClockIcon className="h-4 w-4" />
-                      <span>{task.actualHours}h / {task.estimatedHours}h</span>
+                  <div className="flex items-center gap-2 flex-shrink-0">
+                    {getStatusBadge(task.status)}
+                    <div className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium border ${getPriorityColor(task.priority || 'medium')}`}>
+                      {(task.priority || 'medium').charAt(0).toUpperCase() + (task.priority || 'medium').slice(1)}
                     </div>
                   </div>
                 </div>
 
-                {/* Action Buttons */}
-                <div className="flex items-center space-x-2 ml-4">
+                {/* Task Description */}
+                <p className="text-gray-700 dark:text-gray-300 text-sm line-clamp-3">
+                  {task.description}
+                </p>
+
+                {/* Task Progress (for in-progress tasks) */}
+                {task.status === 'in-progress' && task.progress && (
+                  <div className="space-y-1">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-600 dark:text-gray-400">Progress</span>
+                      <span className="text-gray-600 dark:text-gray-400">{task.progress}%</span>
+                    </div>
+                    <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                      <div 
+                        className="h-full bg-gradient-to-r from-primary-500 to-secondary-500 rounded-full transition-all duration-300"
+                        style={{ width: `${task.progress}%` }}
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {/* Task Meta Information */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs sm:text-sm text-gray-600 dark:text-gray-400">
+                  <div className="flex items-center space-x-1 truncate">
+                    <UserGroupIcon className="h-4 w-4 flex-shrink-0" />
+                    <span className="truncate">{task.assignedTo.name}</span>
+                  </div>
+                  <div className="flex items-center space-x-1">
+                    <CalendarDaysIcon className="h-4 w-4 flex-shrink-0" />
+                    <span className={`truncate ${isOverdue(task.dueDate, task.status) ? 'text-red-600 font-medium' : ''}`}>
+                      {formatDate(task.dueDate)}
+                    </span>
+                  </div>
+                  <div className="flex items-center space-x-1">
+                    <ClockIcon className="h-4 w-4 flex-shrink-0" />
+                    <span>{task.actualHours}h / {task.estimatedHours}h</span>
+                  </div>
+                </div>
+
+                {/* Mobile Action Buttons */}
+                <div className="flex flex-wrap items-center gap-2 pt-2">
                   {/* Status Update Buttons */}
                   {task.status !== 'completed' && (
-                    <div className="flex space-x-1">
+                    <div className="flex gap-2">
                       {task.status === 'todo' && (
                         <button
                           onClick={() => handleStatusUpdate(task.id, 'in-progress')}
-                          className="px-3 py-1 text-xs bg-blue-100 text-blue-700 rounded-md hover:bg-blue-200 transition-colors"
+                          className="px-3 py-2 text-xs font-medium bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors touch-manipulation"
                           title="Start Task"
                         >
                           Start
@@ -672,7 +673,7 @@ const Tasks = () => {
                       )}
                       <button
                         onClick={() => handleStatusUpdate(task.id, 'completed')}
-                        className="px-3 py-1 text-xs bg-green-100 text-green-700 rounded-md hover:bg-green-200 transition-colors"
+                        className="px-3 py-2 text-xs font-medium bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors touch-manipulation"
                         title="Mark Complete"
                       >
                         Complete
@@ -681,17 +682,17 @@ const Tasks = () => {
                   )}
 
                   {/* Edit/Delete Buttons */}
-                  <div className="flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="flex gap-2 ml-auto">
                     <button
                       onClick={() => openEditModal(task)}
-                      className="p-2 text-gray-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-all"
+                      className="p-2 text-gray-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-all touch-manipulation"
                       title="Edit Task"
                     >
                       <PencilIcon className="h-4 w-4" />
                     </button>
                     <button
                       onClick={() => handleDeleteTask(task.id)}
-                      className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
+                      className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all touch-manipulation"
                       title="Delete Task"
                     >
                       <TrashIcon className="h-4 w-4" />
@@ -726,16 +727,16 @@ const Tasks = () => {
 
       {/* Create Task Modal */}
       {showCreateModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-2 sm:p-4 z-50">
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="bg-white dark:bg-gray-800 rounded-xl p-6 w-full max-w-lg"
+            className="bg-white dark:bg-gray-800 rounded-xl p-4 sm:p-6 w-full max-w-sm sm:max-w-lg md:max-w-2xl max-h-[90vh] overflow-y-auto"
           >
-            <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">Create New Task</h2>
-            <form onSubmit={handleCreateTask} className="space-y-4">
+            <h2 className="text-lg sm:text-xl font-semibold mb-4 sm:mb-6 text-gray-900 dark:text-white">Create New Task</h2>
+            <form onSubmit={handleCreateTask} className="space-y-4 sm:space-y-5">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Task Title
                 </label>
                 <input
@@ -743,12 +744,12 @@ const Tasks = () => {
                   required
                   value={newTask.title}
                   onChange={(e) => setNewTask({...newTask, title: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                  className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white touch-manipulation"
                   placeholder="Enter task title"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Description
                 </label>
                 <textarea
@@ -756,20 +757,20 @@ const Tasks = () => {
                   rows="3"
                   value={newTask.description}
                   onChange={(e) => setNewTask({...newTask, description: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                  className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white touch-manipulation resize-none"
                   placeholder="Enter task description"
                 />
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Project
                   </label>
                   <select
                     required
                     value={newTask.projectId}
                     onChange={(e) => setNewTask({...newTask, projectId: e.target.value})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                    className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white touch-manipulation"
                   >
                     <option value="">Select Project</option>
                     {Array.isArray(projects) ? projects.map(project => (
@@ -780,13 +781,13 @@ const Tasks = () => {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Priority
                   </label>
                   <select
                     value={newTask.priority}
                     onChange={(e) => setNewTask({...newTask, priority: e.target.value})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                    className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white touch-manipulation"
                   >
                     <option value="low">Low</option>
                     <option value="medium">Medium</option>
@@ -794,9 +795,9 @@ const Tasks = () => {
                   </select>
                 </div>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Due Date
                   </label>
                   <input
@@ -804,11 +805,11 @@ const Tasks = () => {
                     required
                     value={newTask.dueDate}
                     onChange={(e) => setNewTask({...newTask, dueDate: e.target.value})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                    className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white touch-manipulation"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Estimated Hours
                   </label>
                   <input
@@ -818,13 +819,13 @@ const Tasks = () => {
                     required
                     value={newTask.estimatedHours}
                     onChange={(e) => setNewTask({...newTask, estimatedHours: e.target.value})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                    className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white touch-manipulation"
                     placeholder="Hours"
                   />
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Assign To
                 </label>
                 <input
@@ -832,19 +833,23 @@ const Tasks = () => {
                   required
                   value={newTask.assignedTo}
                   onChange={(e) => setNewTask({...newTask, assignedTo: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                  className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white touch-manipulation"
                   placeholder="Enter assignee name"
                 />
               </div>
-              <div className="flex justify-end space-x-3 pt-4">
+              <div className="flex flex-col sm:flex-row justify-end space-y-3 sm:space-y-0 sm:space-x-3 pt-6">
                 <Button
                   type="button"
                   variant="outline"
                   onClick={() => setShowCreateModal(false)}
+                  className="w-full sm:w-auto min-h-[44px] touch-manipulation"
                 >
                   Cancel
                 </Button>
-                <Button type="submit">
+                <Button 
+                  type="submit" 
+                  className="w-full sm:w-auto min-h-[44px] touch-manipulation"
+                >
                   Create Task
                 </Button>
               </div>
@@ -855,16 +860,16 @@ const Tasks = () => {
 
       {/* Edit Task Modal */}
       {showEditModal && selectedTask && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-2 sm:p-4 z-50">
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="bg-white dark:bg-gray-800 rounded-xl p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto"
+            className="bg-white dark:bg-gray-800 rounded-xl p-4 sm:p-6 w-full max-w-sm sm:max-w-lg md:max-w-2xl max-h-[90vh] overflow-y-auto"
           >
-            <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">Edit Task</h2>
-            <form onSubmit={handleEditTask} className="space-y-4">
+            <h2 className="text-lg sm:text-xl font-semibold mb-4 sm:mb-6 text-gray-900 dark:text-white">Edit Task</h2>
+            <form onSubmit={handleEditTask} className="space-y-4 sm:space-y-5">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Task Title
                 </label>
                 <input
@@ -872,11 +877,11 @@ const Tasks = () => {
                   required
                   value={selectedTask.title}
                   onChange={(e) => setSelectedTask({...selectedTask, title: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                  className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white touch-manipulation"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Description
                 </label>
                 <textarea
@@ -884,18 +889,18 @@ const Tasks = () => {
                   rows="3"
                   value={selectedTask.description}
                   onChange={(e) => setSelectedTask({...selectedTask, description: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                  className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white touch-manipulation resize-none"
                 />
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Status
                   </label>
                   <select
                     value={selectedTask.status}
                     onChange={(e) => setSelectedTask({...selectedTask, status: e.target.value})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                    className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white touch-manipulation"
                   >
                     <option value="todo">To Do</option>
                     <option value="in-progress">In Progress</option>
@@ -903,13 +908,13 @@ const Tasks = () => {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Priority
                   </label>
                   <select
                     value={selectedTask.priority}
                     onChange={(e) => setSelectedTask({...selectedTask, priority: e.target.value})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                    className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white touch-manipulation"
                   >
                     <option value="low">Low</option>
                     <option value="medium">Medium</option>
@@ -917,9 +922,9 @@ const Tasks = () => {
                   </select>
                 </div>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Due Date
                   </label>
                   <input
@@ -927,11 +932,11 @@ const Tasks = () => {
                     required
                     value={selectedTask.dueDate}
                     onChange={(e) => setSelectedTask({...selectedTask, dueDate: e.target.value})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                    className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white touch-manipulation"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Estimated Hours
                   </label>
                   <input
@@ -941,13 +946,13 @@ const Tasks = () => {
                     required
                     value={selectedTask.estimatedHours}
                     onChange={(e) => setSelectedTask({...selectedTask, estimatedHours: parseInt(e.target.value)})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                    className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white touch-manipulation"
                   />
                 </div>
               </div>
               {selectedTask.status === 'in-progress' && (
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Progress (%)
                   </label>
                   <input
@@ -956,12 +961,12 @@ const Tasks = () => {
                     max="100"
                     value={selectedTask.progress || 0}
                     onChange={(e) => setSelectedTask({...selectedTask, progress: parseInt(e.target.value)})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                    className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white touch-manipulation"
                   />
                 </div>
               )}
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Actual Hours Spent
                 </label>
                 <input
@@ -970,18 +975,22 @@ const Tasks = () => {
                   max="200"
                   value={selectedTask.actualHours || 0}
                   onChange={(e) => setSelectedTask({...selectedTask, actualHours: parseInt(e.target.value)})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                  className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white touch-manipulation"
                 />
               </div>
-              <div className="flex justify-end space-x-3 pt-4">
+              <div className="flex flex-col sm:flex-row justify-end space-y-3 sm:space-y-0 sm:space-x-3 pt-6">
                 <Button
                   type="button"
                   variant="outline"
                   onClick={() => setShowEditModal(false)}
+                  className="w-full sm:w-auto min-h-[44px] touch-manipulation"
                 >
                   Cancel
                 </Button>
-                <Button type="submit">
+                <Button 
+                  type="submit"
+                  className="w-full sm:w-auto min-h-[44px] touch-manipulation"
+                >
                   Update Task
                 </Button>
               </div>

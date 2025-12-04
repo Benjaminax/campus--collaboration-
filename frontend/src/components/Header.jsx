@@ -35,27 +35,80 @@ const Header = ({ isMobileMenuOpen, setIsMobileMenuOpen }) => {
   const [showProfileMenu, setShowProfileMenu] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [unreadCount, setUnreadCount] = useState(0)
+  const [isOnline, setIsOnline] = useState(navigator.onLine)
+  const [retryCount, setRetryCount] = useState(0)
   const { user, logout } = useAuth()
   const navigate = useNavigate()
   const profileMenuRef = useRef()
   const location = useLocation()
 
-  // Fetch unread notification count
-  const fetchUnreadCount = async () => {
+  // Fetch unread notification count with retry logic
+  const fetchUnreadCount = async (attempt = 0) => {
+    // Skip if offline
+    if (!navigator.onLine) {
+      console.log('📱 Offline mode - skipping notification fetch')
+      return
+    }
+
     try {
       const response = await api.get('/notifications/counts')
       setUnreadCount(response.data?.unreadCount || 0)
+      setRetryCount(0) // Reset retry count on success
     } catch (error) {
       console.error('Error fetching notification count:', error)
+      
+      // Only retry for network errors, not auth errors
+      if (error.code === 'ERR_NETWORK' && attempt < 3) {
+        const delay = Math.pow(2, attempt) * 1000 // Exponential backoff: 1s, 2s, 4s
+        console.log(`⏳ Retrying notification fetch in ${delay/1000}s (attempt ${attempt + 1}/3)`)
+        
+        setTimeout(() => {
+          fetchUnreadCount(attempt + 1)
+        }, delay)
+        
+        setRetryCount(attempt + 1)
+      } else if (error.response?.status === 401) {
+        // Don't retry auth errors
+        console.log('🔒 Authentication required for notifications')
+      }
     }
   }
 
   useEffect(() => {
-    fetchUnreadCount()
-    // Refresh count every 30 seconds
-    const interval = setInterval(fetchUnreadCount, 30000)
-    return () => clearInterval(interval)
-  }, [])
+    // Handle online/offline status
+    const handleOnline = () => {
+      setIsOnline(true)
+      setRetryCount(0)
+      console.log('🌐 Back online - resuming notifications')
+      fetchUnreadCount()
+    }
+    
+    const handleOffline = () => {
+      setIsOnline(false)
+      console.log('📱 Gone offline - pausing notifications')
+    }
+
+    window.addEventListener('online', handleOnline)
+    window.addEventListener('offline', handleOffline)
+
+    // Initial fetch if online
+    if (navigator.onLine) {
+      fetchUnreadCount()
+    }
+    
+    // Smart refresh interval - only when online and not retrying
+    const interval = setInterval(() => {
+      if (navigator.onLine && retryCount === 0) {
+        fetchUnreadCount()
+      }
+    }, 60000) // Reduced frequency to 60 seconds to be less aggressive
+
+    return () => {
+      clearInterval(interval)
+      window.removeEventListener('online', handleOnline)
+      window.removeEventListener('offline', handleOffline)
+    }
+  }, [retryCount])
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -148,15 +201,23 @@ const Header = ({ isMobileMenuOpen, setIsMobileMenuOpen }) => {
           >
             {/* Notifications */}
             <motion.button 
-              className="relative p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 rounded-xl hover:bg-gray-100/80 dark:hover:bg-gray-700/80 transition-colors group"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => navigate('/notifications')}
+              className={`relative p-2 rounded-xl transition-colors group ${
+                isOnline 
+                  ? 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100/80 dark:hover:bg-gray-700/80'
+                  : 'text-gray-300 dark:text-gray-600 cursor-not-allowed'
+              }`}
+              whileHover={isOnline ? { scale: 1.05 } : {}}
+              whileTap={isOnline ? { scale: 0.95 } : {}}
+              onClick={() => isOnline && navigate('/notifications')}
+              title={isOnline ? 'Notifications' : 'Notifications unavailable (offline)'}
+              disabled={!isOnline}
             >
-              <motion.div whileHover={{ rotate: 10 }}>
+              <motion.div whileHover={isOnline ? { rotate: 10 } : {}}>
                 <BellIcon className="h-5 w-5" />
               </motion.div>
-              {unreadCount > 0 && (
+              
+              {/* Unread count badge */}
+              {unreadCount > 0 && isOnline && (
                 <motion.span 
                   className="absolute -top-1 -right-1 h-5 w-5 bg-gradient-to-r from-red-500 to-pink-500 rounded-full text-xs flex items-center justify-center text-white font-semibold shadow-md"
                   initial={{ scale: 0 }}
@@ -166,6 +227,26 @@ const Header = ({ isMobileMenuOpen, setIsMobileMenuOpen }) => {
                 >
                   {unreadCount > 99 ? '99+' : unreadCount}
                 </motion.span>
+              )}
+              
+              {/* Offline indicator */}
+              {!isOnline && (
+                <motion.span 
+                  className="absolute -top-1 -right-1 h-3 w-3 bg-gray-400 rounded-full"
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  title="Offline"
+                />
+              )}
+              
+              {/* Retry indicator */}
+              {isOnline && retryCount > 0 && (
+                <motion.span 
+                  className="absolute -top-1 -right-1 h-3 w-3 bg-yellow-400 rounded-full animate-pulse"
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  title={`Retrying... (${retryCount}/3)`}
+                />
               )}
             </motion.button>
 
