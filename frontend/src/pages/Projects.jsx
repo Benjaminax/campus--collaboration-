@@ -30,7 +30,9 @@ const Projects = () => {
     description: '',
     category: '',
     dueDate: '',
-    priority: 'medium'
+    priority: 'medium',
+    status: 'planning',
+    progress: 0
   })
 
   // Fetch projects from API
@@ -168,6 +170,9 @@ const Projects = () => {
         description: newProject.description.trim(),
         courseCode: newProject.category.trim() || undefined,
         deadline: newProject.dueDate ? new Date(newProject.dueDate).toISOString() : undefined,
+        status: newProject.status,
+        progress: newProject.progress || 0,
+        priority: newProject.priority,
         tags: [],
         color: '#3B82F6'
       };
@@ -188,7 +193,7 @@ const Projects = () => {
       const newProjectData = response.data?.data || response.data
       setProjects(Array.isArray(projects) ? [...projects, newProjectData] : [newProjectData])
       setShowCreateModal(false)
-      setNewProject({ name: '', description: '', category: '', dueDate: '', priority: 'medium' })
+      setNewProject({ name: '', description: '', category: '', dueDate: '', priority: 'medium', status: 'planning', progress: 0 })
     } catch (error) {
       console.error('Error creating project:', error)
       console.error('Error response:', error.response?.data)
@@ -216,13 +221,13 @@ const Projects = () => {
       const newProj = {
         id: Date.now(),
         ...newProject,
-        status: 'planning',
-        progress: 0,
+        status: newProject.status || 'planning',
+        progress: newProject.progress || 0,
         members: [{ name: user?.name || 'Current User', avatar: null, role: user?.role || 'student' }]
       }
       setProjects(Array.isArray(projects) ? [...projects, newProj] : [newProj])
       setShowCreateModal(false)
-      setNewProject({ name: '', description: '', category: '', dueDate: '', priority: 'medium' })
+      setNewProject({ name: '', description: '', category: '', dueDate: '', priority: 'medium', status: 'planning', progress: 0 })
     }
   }
 
@@ -559,16 +564,16 @@ const Projects = () => {
 
       {/* Create Project Modal */}
       {showCreateModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-2 sm:p-4 z-50">
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="bg-white dark:bg-gray-800 rounded-xl p-6 w-full max-w-md"
+            className="bg-white dark:bg-gray-800 rounded-xl p-4 sm:p-6 w-full max-w-sm sm:max-w-md md:max-w-lg max-h-[90vh] overflow-y-auto"
           >
-            <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">Create New Project</h2>
-            <form onSubmit={handleCreateProject} className="space-y-4">
+            <h2 className="text-lg sm:text-xl font-semibold mb-4 sm:mb-6 text-gray-900 dark:text-white">Create New Project</h2>
+            <form onSubmit={handleCreateProject} className="space-y-4 sm:space-y-5">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Project Name
                 </label>
                 <input
@@ -576,12 +581,12 @@ const Projects = () => {
                   required
                   value={newProject.name}
                   onChange={(e) => setNewProject({...newProject, name: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                  className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white touch-manipulation"
                   placeholder="Enter project name"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Description
                 </label>
                 <textarea
@@ -589,24 +594,53 @@ const Projects = () => {
                   rows="3"
                   value={newProject.description}
                   onChange={(e) => setNewProject({...newProject, description: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                  className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white touch-manipulation resize-none"
                   placeholder="Enter project description"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Course Code
                 </label>
                 <input
                   type="text"
                   value={newProject.category}
                   onChange={(e) => setNewProject({...newProject, category: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                  className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white touch-manipulation"
                   placeholder="e.g., CS101, IT250, WEB301"
                 />
               </div>
               <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Status
+                </label>
+                <select
+                  value={newProject.status}
+                  onChange={(e) => setNewProject({...newProject, status: e.target.value})}
+                  className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white touch-manipulation"
+                >
+                  <option value="planning">Planning</option>
+                  <option value="active">Active</option>
+                  <option value="onhold">On Hold</option>
+                  <option value="completed">Completed</option>
+                </select>
+              </div>
+              <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Initial Progress (%)
+                </label>
+                <input
+                  type="number"
+                  min="0"
+                  max="100"
+                  value={newProject.progress}
+                  onChange={(e) => setNewProject({...newProject, progress: parseInt(e.target.value) || 0})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                  placeholder="0"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Due Date
                 </label>
                 <input
@@ -614,32 +648,36 @@ const Projects = () => {
                   required
                   value={newProject.dueDate}
                   onChange={(e) => setNewProject({...newProject, dueDate: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                  className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white touch-manipulation"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Priority
                 </label>
                 <select
                   value={newProject.priority}
                   onChange={(e) => setNewProject({...newProject, priority: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                  className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white touch-manipulation"
                 >
                   <option value="low">Low</option>
                   <option value="medium">Medium</option>
                   <option value="high">High</option>
                 </select>
               </div>
-              <div className="flex justify-end space-x-3 pt-4">
+              <div className="flex flex-col sm:flex-row justify-end space-y-3 sm:space-y-0 sm:space-x-3 pt-6">
                 <Button
                   type="button"
                   variant="outline"
                   onClick={() => setShowCreateModal(false)}
+                  className="w-full sm:w-auto min-h-[44px] touch-manipulation"
                 >
                   Cancel
                 </Button>
-                <Button type="submit">
+                <Button 
+                  type="submit" 
+                  className="w-full sm:w-auto min-h-[44px] touch-manipulation"
+                >
                   Create Project
                 </Button>
               </div>
@@ -650,13 +688,13 @@ const Projects = () => {
 
       {/* Edit Project Modal */}
       {showEditModal && selectedProject && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-2 sm:p-4 z-50">
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="bg-white dark:bg-gray-800 rounded-xl p-6 w-full max-w-md"
+            className="bg-white dark:bg-gray-800 rounded-xl p-4 sm:p-6 w-full max-w-sm sm:max-w-md md:max-w-lg max-h-[90vh] overflow-y-auto"
           >
-            <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">Edit Project</h2>
+            <h2 className="text-lg sm:text-xl font-semibold mb-4 sm:mb-6 text-gray-900 dark:text-white">Edit Project</h2>
             <form onSubmit={handleEditProject} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -684,14 +722,14 @@ const Projects = () => {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Category
+                  Course Code
                 </label>
                 <input
                   type="text"
-                  required
                   value={selectedProject.category}
                   onChange={(e) => setSelectedProject({...selectedProject, category: e.target.value})}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                  placeholder="e.g., CS101, IT250, WEB301"
                 />
               </div>
               <div>
@@ -711,14 +749,14 @@ const Projects = () => {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Progress
+                  Progress (%)
                 </label>
                 <input
                   type="number"
                   min="0"
                   max="100"
                   value={selectedProject.progress}
-                  onChange={(e) => setSelectedProject({...selectedProject, progress: parseInt(e.target.value)})}
+                  onChange={(e) => setSelectedProject({...selectedProject, progress: parseInt(e.target.value) || 0})}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
                 />
               </div>

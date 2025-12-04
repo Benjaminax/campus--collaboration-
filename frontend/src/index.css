@@ -37,6 +37,34 @@
     button, a, input, select, textarea {
       min-height: 44px; /* Apple's recommended minimum */
     }
+    
+    /* Larger tap targets for form elements */
+    .form-input, .form-select, .form-textarea {
+      min-height: 48px;
+      font-size: 16px; /* Prevents zoom on iOS */
+    }
+    
+    /* Better modal sizing */
+    .modal-content {
+      max-height: 90vh;
+      overflow-y: auto;
+      margin: 1rem;
+    }
+    
+    /* Improve card touch targets */
+    .card-clickable {
+      min-height: 60px;
+    }
+    
+    /* Better spacing for mobile */
+    .mobile-spacing {
+      padding: 1rem;
+    }
+    
+    /* Prevent horizontal scrolling */
+    body {
+      overflow-x: hidden;
+    }
   }
   
   /* Prevent text selection on UI elements */
@@ -77,7 +105,50 @@
   }
 }
 
-/* Custom scrollbar */
+/* Custom utilities for mobile optimization */
+@layer utilities {
+  /* Touch-friendly animations */
+  .touch-manipulation {
+    touch-action: manipulation;
+  }
+  
+  /* Prevent iOS input zoom */
+  @supports (-webkit-touch-callout: none) {
+    input[type=\"text\"],
+    input[type=\"email\"], 
+    input[type=\"password\"],
+    input[type=\"number\"],
+    input[type=\"date\"],
+    textarea,
+    select {
+      font-size: 16px !important;
+    }
+  }
+  
+  /* Better mobile card shadows */
+  .mobile-card-shadow {
+    box-shadow: 0 2px 8px -2px rgba(0, 0, 0, 0.1),
+                0 4px 16px -4px rgba(0, 0, 0, 0.06);
+  }
+  
+  /* Mobile-friendly hover states */
+  @media (hover: none) {
+    .hover-lift:hover {
+      transform: none;
+    }
+  }
+  
+  /* Safe area padding for mobile devices */
+  .safe-area-padding {
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+  
+  /* Keyboard safe spacing */
+  .keyboard-safe {
+    padding-bottom: env(keyboard-inset-height, 0px);
+  }
+}
 ::-webkit-scrollbar {
   width: 6px;
 }
@@ -239,6 +310,39 @@ input:checked + div .dot {
 /* Additional animation utilities */
 .animation-delay-2000 {
   animation-delay: 2s;
+}
+
+/* Mobile optimization utilities */
+@layer utilities {
+  /* Touch-friendly animations */
+  .touch-manipulation {
+    touch-action: manipulation;
+  }
+  
+  /* Prevent iOS input zoom */
+  @supports (-webkit-touch-callout: none) {
+    input[type="text"],
+    input[type="email"], 
+    input[type="password"],
+    input[type="number"],
+    input[type="date"],
+    textarea,
+    select {
+      font-size: 16px !important;
+    }
+  }
+  
+  /* Better mobile card shadows */
+  .mobile-card-shadow {
+    box-shadow: 0 2px 8px -2px rgba(0, 0, 0, 0.1),
+                0 4px 16px -4px rgba(0, 0, 0, 0.06);
+  }
+  
+  /* Safe area padding for mobile devices */
+  .safe-area-padding {
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
 }
 
 .animation-delay-4000 {

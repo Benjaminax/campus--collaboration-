@@ -79,10 +79,11 @@ const Header = ({ isMobileMenuOpen, setIsMobileMenuOpen }) => {
         <div className="flex items-center justify-between h-full">
           {/* Mobile Menu Button */}
           <motion.button
-            className="md:hidden p-2 rounded-lg hover:bg-gray-100/80 dark:hover:bg-gray-700/80 transition-colors"
+            className="md:hidden p-3 rounded-lg hover:bg-gray-100/80 dark:hover:bg-gray-700/80 transition-colors touch-manipulation"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
+            aria-label="Toggle mobile menu"
           >
             {isMobileMenuOpen ? (
               <XMarkIcon className="h-6 w-6 text-gray-600 dark:text-gray-400" />
